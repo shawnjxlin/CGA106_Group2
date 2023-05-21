@@ -211,7 +211,7 @@ public class OrderService {
     }
 
     // 每五分鐘檢查超過十分鐘未付款的訂單，將座位釋放且將訂單改為已結案
-    @Scheduled(fixedRate = 300000)
+//    @Scheduled(fixedRate = 300000)
     public void checkTorders() {
         List<Torder> unPaidOrders = torderRepository.findAllByUnpaidAndBeforeTenMins();
 

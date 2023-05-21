@@ -75,7 +75,7 @@ public class TorderService {
         return torderDto;
     }
 
-    // AddPorder
+    // AddTorder
     @Transactional
     public TorderDto addTOrder(AddTorderDTO addTorderDTO) {
         Torder torder = new Torder();
@@ -85,11 +85,12 @@ public class TorderService {
         torder.setTorderDate(Timestamp.valueOf(LocalDateTime.now()));
         torder.setTpaymentStatus(0);
         torder.setTprocessStatus(0);
+        torder.setPaymentTransactionId("");
 
         Torder savedTorder = torderRepository.save(torder);
 
-        Member member = memberRepository.getReferenceById(savedTorder.getMemberNo());
-        emailService.sendTOrderMail(member.getMname(), member.getMemail(), savedTorder.getTorderNo().toString(), String.valueOf(0));
+//        Member member = memberRepository.getReferenceById(savedTorder.getMemberNo());
+//        emailService.sendTOrderMail(member.getMname(), member.getMemail(), savedTorder.getTorderNo().toString(), String.valueOf(0));
 
         List<OrderTicketDTO> orderTickets = addTorderDTO.getOrderTickets();
 
@@ -122,9 +123,6 @@ public class TorderService {
         return torderRepository.save(torder);
     }
 
-
-
-
     public void deleteTorder(Integer torderNo) {
         // 找到對應的tdetails
         List<Tdetails> tdetails = tdetailsRepository.findAllByTorderNo(torderNo);
@@ -156,8 +154,6 @@ public class TorderService {
                 collectCrudService.cancelTicket(torderNo);
             }
         }
-
-
     }
 
     private void updateSeatStatus(Integer sessionNo, Integer seatNo, Integer seatStatus) {
@@ -176,6 +172,5 @@ public class TorderService {
         session.setStandingQty(session.getStandingQty() - tqty);
         sessionRepository.save(session);
     }
-
 
 }

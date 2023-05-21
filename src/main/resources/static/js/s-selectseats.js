@@ -510,6 +510,8 @@ function TicketBySystem() {
 
                         if (jsondata) {
                             let seatNos = [];
+                            let count = 0;
+
                             for (let j of jsondata) {
                                 seatNos.push(j);
                                 // 包裝取得的座位陣列，並送給 WebSocket 伺服器推播
@@ -517,15 +519,17 @@ function TicketBySystem() {
                                 seat.id = j;
                                 seat.classList.add("selected");
                                 sendMessage(seat);
+                                ++count;
                             }
 
-                            // 將要購買的座位編號以陣列的格式存在 SessionStorage
-                            sessionStorage.setItem("toBuySeats", JSON.stringify(seatNos));
-                            window.location.href = "/front-activity-checkout.html";
-                            return;
+                            if(count === jsondata.length){
+                                // 將要購買的座位編號以陣列的格式存在 SessionStorage
+                                sessionStorage.setItem("toBuySeats", JSON.stringify(seatNos));
+                                window.location.href = "/front-activity-checkout.html";
+                                return;
+                            }
                         }
-                    })
-                    .catch(error => {
+                    }).catch(error => {
                         $('#toBeVerified').val("");
 
                         Swal.fire({

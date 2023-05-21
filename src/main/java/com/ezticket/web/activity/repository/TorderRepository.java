@@ -19,4 +19,6 @@ public interface TorderRepository extends JpaRepository<Torder, Integer> {
     @Query(value = "SELECT * FROM torder o WHERE o.tpaymentstatus = 0 AND o.torderdate < DATE_SUB(NOW(), INTERVAL 10 MINUTE)", nativeQuery = true)
     List<Torder> findAllByUnpaidAndBeforeTenMins();
 
+    Torder findByPaymentTransactionId(String paymentTransactionId);
+
 }

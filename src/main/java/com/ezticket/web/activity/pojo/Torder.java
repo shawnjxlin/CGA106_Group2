@@ -47,6 +47,8 @@ public class Torder {
 	private Integer tpaymentStatus;
 	@Column(name = "tprocessstatus")
 	private Integer tprocessStatus;
+	@Column(name = "PAYMENTTRANSACTIONID")
+	private String paymentTransactionId;
 	@ManyToOne
 	@JoinColumn(name = "MEMBERNO" ,insertable = false, updatable = false)
 	private Member member;

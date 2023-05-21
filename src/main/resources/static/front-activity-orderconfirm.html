@@ -291,7 +291,9 @@
     $(document).ready(() => {
 
         let urlParams = new URLSearchParams(window.location.search);
-        const id = urlParams.get('id');
+        const id = urlParams.get('id').substring(0,5);
+        const status = urlParams.get('status');
+        const paidDate = urlParams.get('paidDate');
 
         let sessionNo;
         let aname;
@@ -299,6 +301,8 @@
         let ticketQTY;
         let tcheckTotal;
         let aImgSrc;
+
+        fetch(`/Torder/established?id=${id}&status=${status}&paidDate=${paidDate}`);
 
         // 查詢訂單
         $.ajax({

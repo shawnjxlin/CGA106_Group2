@@ -599,8 +599,7 @@
                         sessionStorage.removeItem("blockNo");
                         sessionStorage.removeItem("toBuySeats");
                         sessionStorage.removeItem("toBuyTickets");
-                        $('body').append(data);
-                        $('#allPayAPIForm').submit();
+                        location.href = data;
                     },
                     error: function () {
                         swal({
