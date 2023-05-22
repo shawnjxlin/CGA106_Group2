@@ -7,6 +7,8 @@ import com.ezticket.web.activity.pojo.Aimgt;
 import com.ezticket.web.activity.repository.ActivityRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@CacheConfig(cacheNames = "ActivityService")
 public class ActivityService {
     @Autowired
     private ActivityRepository activityRepository;
@@ -26,7 +29,7 @@ public class ActivityService {
 
 
 
-
+    @Cacheable(value = "activityList", keyGenerator = "redisKeyGenerator")
     public List<ActivityDto> findAllByOrderByActivityNoDesc(){
         List<ActivityDto> activityList=activityRepository.findAllByOrderByActivityNoDesc()
                                        .stream()

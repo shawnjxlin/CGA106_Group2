@@ -9,6 +9,8 @@ import com.ezticket.web.users.pojo.Member;
 import com.ezticket.web.users.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
-
+@CacheConfig(cacheNames = "ProductService")
 public class ProductService {
     @Autowired
     private ProductDAO dao;
@@ -104,15 +106,13 @@ public class ProductService {
     public Product getOneProduct(Integer productno) {
         return dao.getByPrimaryKey(productno);
     }
-
     public List<Product> getAllProduct() {
         return dao.getAll();
     }
-
     public List<Product> getAllByName(String pname) {
         return dao.findByProductName(pname);
     }
-
+//    @Cacheable(value = "ProductSearch", keyGenerator = "redisKeyGenerator")
     public List<Product> getAllByproductSearch(Map<String, String[]> map) {
         return dao.getAll(map);
     }
