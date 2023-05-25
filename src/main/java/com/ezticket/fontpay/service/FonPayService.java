@@ -34,10 +34,9 @@ public class FonPayService {
     @Autowired
     private CollectCrudService collectCrudService;
 
-    static String FONPAY_API_KEY = "588418532082";
-    static String FONPAY_API_SECRET = "9Zc4DSfuzk5F4yrpGFfI";
-    static String FONPAY_API_MERCHANT_CODE = "ME18315275";
-    static String PAYMENT_CREATE_ORDER = "PaymentCreateOrder";
+    static String FONPAY_API_KEY = "593833005619";
+    static String FONPAY_API_SECRET = "Ln95pHin6gFE2ev3qXff";
+    static String FONPAY_API_MERCHANT_CODE = "ME10679778";
 
     public String paymentCreateOrder(Integer torderNo) throws IOException {
         // 取得訂單
@@ -89,7 +88,7 @@ public class FonPayService {
         }
         //===========================================================================
 
-        URL url = new URL("https://test-api.fonpay.tw/api/payment/" + PAYMENT_CREATE_ORDER);
+        URL url = new URL("https://test-api.fonpay.tw/api/payment/PaymentCreateOrder");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("POST");
         con.setRequestProperty("Accept", "application/json");
@@ -102,7 +101,7 @@ public class FonPayService {
         con.setDoOutput(true);
         String jsonInputString = "{ " +
                 "'request':{" +
-                "'paymentNo': 'ezTicket0000000" + torderNo + "'," +
+                "'paymentNo': 'ezTicket" + torderNo + "'," +
                 "'legacyId':'TS1234567'," +
                 "'totalPrice':" + torder.getTcheckTotal() + "," +
                 "'paymentDueDate':'" + paymentEndTime + "'," +
@@ -346,7 +345,7 @@ public class FonPayService {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             String status = jsonObject.get("result").getAsJsonObject().get("payment").getAsJsonObject().get("status").getAsString();
 
-            if(status.equals("CANCEL")){
+            if (status.equals("CANCEL")) {
                 handleCancel(torder);
                 torderRepository.save(torder);
             }
@@ -356,6 +355,98 @@ public class FonPayService {
 
     }
 
+
+    public String paymentRefundOrder(Integer id) throws IOException {
+        Torder torder = torderRepository.getById(id);
+
+        URL url = new URL("https://test-api.fonpay.tw/api/payment/paymentRefundOrder");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Accept", "application/json");
+        con.setRequestProperty("key", FONPAY_API_KEY);
+        con.setRequestProperty("secret", FONPAY_API_SECRET);
+        con.setRequestProperty("merchantCode", FONPAY_API_MERCHANT_CODE);
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("User-Agent", "Tibame_Student");
+        con.setRequestProperty("X-ignore", "true");
+        con.setDoOutput(true);
+        String jsonInputString = "{ " +
+                "'request':{" +
+                "'paymentTransactionId': '" + torder.getPaymentTransactionId() + "', " +
+                "'refundPrice': " + torder.getTcheckTotal() + "," +
+                "'refundNo': 'refund00001'" +
+                "}," +
+                "'basic':{" +
+                "'appVersion':'1.0'," +
+                "'os':'IOS'," +
+                "'appName':'SYSTEM-API-ezTicket'," +
+                "'latitude':24.777678," +
+                "'clientIp':'61.216.102.83'," +
+                "'lang':'zh_TW'," +
+                "'deviceId':'123456789'," +
+                "'longitude':121.043175" +
+                "}}";
+
+
+        try (OutputStream os = con.getOutputStream()) {
+            byte[] input = jsonInputString.getBytes("utf-8");
+            os.write(input, 0, input.length);
+        }
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(con.getInputStream(), "utf-8"))) {
+            StringBuilder response = new StringBuilder();
+            String responseLine = null;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            String responseString = response.toString();
+            return responseString;
+        }
+    }
+
+    public String paymentAccountSummary() throws IOException {
+        URL url = new URL("https://test-api.fonpay.tw/api/payment/paymentAccountSummary");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Accept", "application/json");
+        con.setRequestProperty("key", FONPAY_API_KEY);
+        con.setRequestProperty("secret", FONPAY_API_SECRET);
+        con.setRequestProperty("merchantCode", FONPAY_API_MERCHANT_CODE);
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("User-Agent", "Tibame_Student");
+        con.setRequestProperty("X-ignore", "true");
+        con.setDoOutput(true);
+        String jsonInputString = "{ " +
+                "'request':{" +
+                "}," +
+                "'basic':{" +
+                "'appVersion':'1.0'," +
+                "'os':'IOS'," +
+                "'appName':'SYSTEM-API-ezTicket'," +
+                "'latitude':24.777678," +
+                "'clientIp':'61.216.102.83'," +
+                "'lang':'zh_TW'," +
+                "'deviceId':'123456789'," +
+                "'longitude':121.043175" +
+                "}}";
+
+
+        try (OutputStream os = con.getOutputStream()) {
+            byte[] input = jsonInputString.getBytes("utf-8");
+            os.write(input, 0, input.length);
+        }
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(con.getInputStream(), "utf-8"))) {
+            StringBuilder response = new StringBuilder();
+            String responseLine = null;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            String responseString = response.toString();
+            return responseString;
+        }
+
+    }
 
     public void handleSuccess(Torder torder, String paidDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -406,7 +497,6 @@ public class FonPayService {
             }
         }
     }
-
 
 
 }

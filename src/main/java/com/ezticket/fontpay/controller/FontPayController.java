@@ -4,10 +4,7 @@ import com.ezticket.fontpay.service.FonPayService;
 import com.ezticket.web.activity.repository.*;
 import com.ezticket.web.activity.service.CollectCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -61,6 +58,18 @@ public class FontPayController {
     @GetMapping("/paymentQuery")
     public void paymentQuery(@RequestParam("id") String id) throws IOException {
         String response = fonPayService.paymentQueryOrder(Integer.valueOf(id));
+        System.out.println(response);
+    }
+
+    @PostMapping("accountSummary")
+    public void accountSummary() throws IOException{
+        String response = fonPayService.paymentAccountSummary();
+        System.out.println(response);
+    }
+
+    @GetMapping("paymentRefund")
+    public void paymentRefund(@RequestParam("id")String id) throws IOException{
+        String response = fonPayService.paymentRefundOrder(Integer.valueOf(id));
         System.out.println(response);
     }
 

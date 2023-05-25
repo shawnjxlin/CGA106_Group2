@@ -130,8 +130,14 @@ public class SeatsService {
                         returnedList.clear();
                         returnedList.add(toSellSeats.get(i));
                         returnedList.add(toSellSeats.get(i + 1));
-                        if(seatsRedisDAO.setFindAllValues("Session" + sessionNo + ":Set:2").contains(returnedList.toString()) == true)
+                        if (seatsRedisDAO.setFindAllValues("Session" + sessionNo + ":Set:2").contains(returnedList.toString()) == true)
                             break;
+                        if (i == (toSellSeats.size() - 1) - 1){
+                            if (seatsRedisDAO.setFindAllValues("Session" + sessionNo + ":Set:2").contains(returnedList.toString()) == true)
+                                break;
+                            else
+                                throw new Exception();
+                        }
                     }
                     break;
                 case 3:
@@ -142,8 +148,14 @@ public class SeatsService {
                         returnedList.add(toSellSeats.get(i));
                         returnedList.add(toSellSeats.get(i + 1));
                         returnedList.add(toSellSeats.get(i + 2));
-                        if(seatsRedisDAO.setFindAllValues("Session" + sessionNo + ":Set:3").contains(returnedList.toString()) == true)
+                        if (seatsRedisDAO.setFindAllValues("Session" + sessionNo + ":Set:3").contains(returnedList.toString()) == true)
                             break;
+                        if (i == (toSellSeats.size() - 2) - 1){
+                            if (seatsRedisDAO.setFindAllValues("Session" + sessionNo + ":Set:3").contains(returnedList.toString()) == true)
+                                break;
+                            else
+                                throw new Exception();
+                        }
                     }
                     break;
                 case 4:
@@ -155,8 +167,14 @@ public class SeatsService {
                         returnedList.add(toSellSeats.get(i + 1));
                         returnedList.add(toSellSeats.get(i + 2));
                         returnedList.add(toSellSeats.get(i + 3));
-                        if(seatsRedisDAO.setFindAllValues("Session" + sessionNo + ":Set:4").contains(returnedList.toString()) == true)
+                        if (seatsRedisDAO.setFindAllValues("Session" + sessionNo + ":Set:4").contains(returnedList.toString()) == true)
                             break;
+                        if (i == (toSellSeats.size() - 3) - 1){
+                            if (seatsRedisDAO.setFindAllValues("Session" + sessionNo + ":Set:4").contains(returnedList.toString()) == true)
+                                break;
+                            else
+                                throw new Exception();
+                        }
                     }
                     break;
             }
@@ -224,13 +242,13 @@ public class SeatsService {
         List<BlockPrice> actBlockInfo = blockPriceService.getBlockPriceByActivityNo(activityNo);
 
         // 若欲複製模板的區域數量不等於節目區域數量，回傳 false
-        if(modelBlockInfo.size() != actBlockInfo.size()){
+        if (modelBlockInfo.size() != actBlockInfo.size()) {
             return false;
         }
 
         // 確認節目複製當前的區域皆數對號入座 (blockType = 1)
-        for(BlockPrice blockPrice: actBlockInfo){
-            if(blockPrice.getBlockType() != 1){
+        for (BlockPrice blockPrice : actBlockInfo) {
+            if (blockPrice.getBlockType() != 1) {
                 return false;
             }
         }
@@ -241,7 +259,7 @@ public class SeatsService {
         System.out.println("modelBlockInfo.size()=" + modelBlockInfo.size());
 
         // 依序取得模板區域
-        for(int blockCount = 0; blockCount < modelBlockInfo.size(); blockCount++){
+        for (int blockCount = 0; blockCount < modelBlockInfo.size(); blockCount++) {
 
             // 取得第 n 個模板區域的模板座位
             List<SeatsModel> seatsModels = modelBlockInfo.get(blockCount).getSeatsModels();
@@ -253,7 +271,7 @@ public class SeatsService {
             System.out.println("toBlockNo=" + toBlockNo);
             System.out.println("toBlockName=" + toBlockName);
 
-            for(SeatsModel sm: seatsModels){
+            for (SeatsModel sm : seatsModels) {
                 Seats seat = new Seats();
                 seat.setSessionNo(sessionNo);
                 seat.setBlockNo(toBlockNo);
@@ -267,7 +285,6 @@ public class SeatsService {
                 returendList.add(seat);
             }
         }
-
 
 
         // 將異動完成的座位存起來
@@ -386,7 +403,7 @@ public class SeatsService {
         return returnedMap;
     }
 
-//    @Scheduled(cron = "0 0 0 * * *")
+    //    @Scheduled(cron = "0 0 0 * * *")
     @Scheduled(fixedRate = 300000)
     public void saveSeatsSets() {
         List<Session> sessions = sessionRepository.findAll();
@@ -399,7 +416,7 @@ public class SeatsService {
 
             // 取得兩個座位的組合
             for (int i = 0; i < seats.size() - 1; i++) {
-                if(seats.get(i).getX() != seats.get(i + 1).getX()){
+                if (seats.get(i).getX() != seats.get(i + 1).getX()) {
                     continue;
                 }
 
@@ -411,7 +428,9 @@ public class SeatsService {
 
             // 取得三個座位的組合
             for (int i = 0; i < seats.size() - 2; i++) {
-                if(seats.get(i).getX() != seats.get(i + 1).getX() || seats.get(i + 1).getX() != seats.get(i + 2).getX()){
+                if (seats.get(i).getX() != seats.get(i + 1).getX() ||
+                        seats.get(i + 1).getX() != seats.get(i + 2).getX() ||
+                        seats.get(i).getX() != seats.get(i + 2).getX()) {
                     continue;
                 }
 
@@ -424,9 +443,12 @@ public class SeatsService {
 
             // 取得四個座位的組合
             for (int i = 0; i < seats.size() - 3; i++) {
-                if(seats.get(i).getX() != seats.get(i + 1).getX() ||
+                if (seats.get(i).getX() != seats.get(i + 1).getX() ||
+                        seats.get(i).getX() != seats.get(i + 2).getX() ||
+                        seats.get(i).getX() != seats.get(i + 3).getX() ||
                         seats.get(i + 1).getX() != seats.get(i + 2).getX() ||
-                            seats.get(i + 2).getX() != seats.get(i + 3).getX()){
+                        seats.get(i + 1).getX() != seats.get(i + 3).getX() ||
+                        seats.get(i + 2).getX() != seats.get(i + 3).getX()) {
                     continue;
                 }
 
@@ -441,10 +463,10 @@ public class SeatsService {
     }
 
     // 當使用者進到選頁面時，將顯示每個區域的剩餘可售票券數
-    public Map<Integer, Integer> getToSellTQty(Integer activityNo, Integer sessionNo){
+    public Map<Integer, Integer> getToSellTQty(Integer activityNo, Integer sessionNo) {
         List<BlockPrice> blockList = blockPriceService.getBlockPriceByActivityNo(activityNo);
         Map<Integer, Integer> returnedMap = new HashMap<Integer, Integer>();
-        for(BlockPrice block: blockList){
+        for (BlockPrice block : blockList) {
             int toSellTQty = seatsRepository.getToSellingNumber(sessionNo, block.getBlockNo());
             returnedMap.put(block.getBlockNo(), toSellTQty);
         }
